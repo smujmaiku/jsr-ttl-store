@@ -166,6 +166,14 @@ export class TTLStore {
 			this.$set(key, item, expireAt);
 		} catch (_e) {}
 	}
+
+	/**
+	 * Update item without changing expire
+	 */
+	updateItem<T = unknown>(key: string, value: T): void {
+		const { expireAt } = this.$get(key);
+		this.setItemUntil(key, value, expireAt);
+	}
 }
 
 export default TTLStore;
