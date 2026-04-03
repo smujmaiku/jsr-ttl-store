@@ -138,6 +138,14 @@ export class TTLStore {
 	}
 
 	/**
+	 * Get expire in epoch ms
+	 */
+	getExpireAt(key: string): number {
+		const { expireAt } = this.$get(key);
+		return expireAt;
+	}
+
+	/**
 	 * Remove a value from storage
 	 */
 	removeItem(key: string): void {
