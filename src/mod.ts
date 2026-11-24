@@ -23,6 +23,23 @@ function tryJson<T>(value: unknown): T | null {
 	return null;
 }
 
+export function createMemStore<
+	T extends Record<
+		Parameters<StorePartial['setItem']>[0],
+		Parameters<StorePartial['setItem']>[1]
+	>,
+>(store = {} as T): StorePartial {
+	return Object.defineProperties({
+		length: 0, // Override later
+		key: (n) => Object.keys(store)[n],
+		getItem: (k) => Reflect.get(store, k),
+		removeItem: (k) => Reflect.deleteProperty(store, k),
+		setItem: (k, v) => Reflect.set(store, k, v),
+	} as StorePartial, {
+		length: { 'get': () => Object.keys(store).length },
+	});
+}
+
 export class TTLStore {
 	private makeKey(key: string): string {
 		return `${this.name}:${key}`;
@@ -89,7 +106,10 @@ export class TTLStore {
 		return data;
 	}
 
-	constructor(private name: string, private store: StorePartial) {
+	constructor(
+		private name: string,
+		private store: StorePartial = createMemStore(),
+	) {
 		this.clean();
 	}
 
